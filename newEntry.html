@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('styles'); ?>
+  </head>
+  <body>
+    <form id="newEntryForm">
+      <table>
+        <tr>
+          <td>Name:</td>
+          <td><input type='text' name='name' id='name'></td>
+        </tr>
+        <tr>
+          <td>URL:</td>
+          <td><input type='text' name='url' id='url'></td>
+        </tr>
+        <tr>
+          <td>Username:</td>
+          <td><input type='text' name='username' id='username'></td>
+        </tr>
+        <tr>
+          <td>Password:</td>
+          <td><input type='password' name='password' id='password'></td>
+        </tr>
+        <tr>
+          <td>Shared Secret:</td>
+          <td><input type='password' name='sharedsecret' id='sharedsecret'></td>
+        </tr>
+        <tr>
+          <td>Re-type shared Secret:</td>
+          <td><input type='password' name='resharedsecret' id='resharedsecret'></td>
+        </tr>
+        <tr>
+          <td><input type="button" value="Save" name="submit" id="submitButton" onclick="submitForm()"/></td>
+          <td><span id="errorMessage"></span></td>
+        </tr>
+      </table>
+      <span id='errorMsg'></span>
+    </form>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.7/sjcl.min.js'></script>
+    <script>
+    function submitForm() {
+      if (document.getElementById('sharedsecret').value != document.getElementById('resharedsecret').value) {
+        document.getElementById('errorMsg').innerHTML = 'Shared secret does not match';
+        return
+      }
+      document.getElementById('errorMsg').innerHTML = ''
+      document.getElementById('submitButton').value = "Saving...";
+      password = document.getElementById('password').value
+      sharedsecret = document.getElementById('sharedsecret').value
+
+      encryptedPassword = sjcl.encrypt(sharedsecret, password)
+      document.getElementById('password').value = encryptedPassword
+      document.getElementById('sharedsecret').value = ''
+      document.getElementById('resharedsecret').value = ''
+
+      
+      google.script.run.withSuccessHandler(function(){
+        document.getElementById('submitButton').value = "Saved";
+        google.script.host.close();
+      }).withFailureHandler(function(error){
+        document.getElementById('submitButton').value = "Failed";
+        document.getElementById('errorMsg').innerHTML = error;
+      }).createNewEntry(document.getElementById('newEntryForm'));
+    }
+    </script>
+  </body>
+</html>
