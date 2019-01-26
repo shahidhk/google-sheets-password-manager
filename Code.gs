@@ -8,11 +8,12 @@ var
 // onOpen is executed when the sheet is opened.
 // adds the Password Manager menu to the sheet.
 function onOpen() {
- SpreadsheetApp.getUi()
-   .createMenu('Password Manager')
-   .addItem('Decrypt password', 'openDecryptUI')
-   .addItem('Add new password', 'openAddNewEntryUI')
-   .addToUi();
+  SpreadsheetApp.getUi()
+    .createMenu('Password Manager')
+    .addItem('Decrypt password', 'openDecryptUI')
+    .addItem('Add new password', 'openAddNewEntryUI')
+    .addItem('Initialize sheet', 'initializeSheet')
+    .addToUi();
 }
 
 // openDecryptUI is executed when Decrypt password menu item is clicked.
@@ -35,6 +36,12 @@ function openAddNewEntryUI() {
       .setHeight(300);
   SpreadsheetApp.getUi()
       .showModalDialog(html, 'Add a new entry');
+}
+
+// initializeSheet adds four column labels to the sheet.
+function initializeSheet() {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  sheet.appendRow(["Name", "URL", "Username", "Password"]);
 }
 
 // createNewEntry gets a form object form the frontend dialog and saves it
